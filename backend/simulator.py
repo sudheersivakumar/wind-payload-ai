@@ -8,7 +8,6 @@ def simulate_payload_drop(
 ):
     dt = 1.0  # seconds
     altitude_m = drop_altitude_km * 1000
-
     x, y, z = 0.0, 0.0, altitude_m
     trajectory = []
 
