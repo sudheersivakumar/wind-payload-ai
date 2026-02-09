@@ -1,8 +1,23 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+import traceback
 from backend.wind_model import WindModel
 from backend.simulator import simulate_payload_drop
 
 app = FastAPI(title="HAPS Wind & Payload Drop AI")
+
+# Global exception handler to ensure JSON responses
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    print("ERROR:", str(exc))
+    print(traceback.format_exc())
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": "Internal server error",
+            "error": str(exc)
+        }
+    )
 
 # Initialize wind model
 wind_model = WindModel("data/wind_sample.csv")
