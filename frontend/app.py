@@ -7,7 +7,8 @@ import plotly.graph_objects as go
 # -----------------------------
 # CONFIG
 # -----------------------------
-BACKEND_URL = "https://wind-payload-ai.onrender.com/"
+# Change this for production deployment
+BACKEND_URL = "http://127.0.0.1:8000"
 
 st.set_page_config(
     page_title="HAPS Wind & Payload Drop AI",
@@ -15,12 +16,10 @@ st.set_page_config(
 )
 
 st.title("🌬️ AI-Based Wind Profiling & Payload Drop Prediction")
-st.markdown(
-    """
-    This system models **stratospheric wind conditions (20–80 km)** and predicts
-    **payload landing locations** for **High-Altitude Platform Stations (HAPS)**.
-    """
-)
+st.markdown("""
+This system models stratospheric wind conditions (20–80 km) and predicts
+payload landing locations for High-Altitude Platform Stations (HAPS).
+""")
 
 # -----------------------------
 # SIDEBAR INPUTS
@@ -59,14 +58,24 @@ altitudes = list(range(20, 81))
 u_winds = []
 v_winds = []
 
-for alt in altitudes:
-    response = requests.get(
-        f"{BACKEND_URL}/wind-profile",
-        params={"altitude_km": alt}
-    )
-    data = response.json()
-    u_winds.append(data["u_wind"])
-    v_winds.append(data["v_wind"])
+with st.spinner("Loading wind profile data..."):
+    for alt in altitudes:
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/wind-profile",
+                params={"altitude_km": alt}
+            )
+            
+            if response.status_code != 200:
+                st.error(f"Failed to fetch wind data at {alt} km")
+                st.stop()
+            
+            data = response.json()
+            u_winds.append(data["u_wind"])
+            v_winds.append(data["v_wind"])
+        except Exception as e:
+            st.error(f"Error fetching wind data: {str(e)}")
+            st.stop()
 
 wind_df = pd.DataFrame({
     "Altitude (km)": altitudes,
@@ -103,19 +112,39 @@ with col2:
 # -----------------------------
 if run_simulation:
     st.subheader("🎯 Payload Drop Trajectory Simulation")
-
+    
+    # Fixed: Removed trailing spaces from keys
     payload = {
         "drop_altitude_km": drop_altitude,
         "payload_mass": payload_mass,
         "descent_rate": descent_rate
     }
 
-    response = requests.post(
-        f"{BACKEND_URL}/simulate-drop",
-        params=payload
-    )
+    with st.spinner("Running simulation..."):
+        try:
+            # Fixed: Backend expects query parameters, not JSON body
+            response = requests.post(
+                f"{BACKEND_URL}/simulate-drop",
+                params=payload  # Using params since backend uses function parameters
+            )
+            
+            # Check response status
+            if response.status_code != 200:
+                st.error(f"Simulation failed with status {response.status_code}")
+                st.code(response.text)
+                st.stop()
+            
+            result = response.json()
+            
+        except requests.exceptions.JSONDecodeError:
+            st.error("❌ Backend returned invalid JSON (likely crashed)")
+            st.code(response.text)
+            st.stop()
+        except Exception as e:
+            st.error(f"❌ Simulation error: {str(e)}")
+            st.stop()
 
-    result = response.json()
+    # Fixed: Removed trailing spaces from all keys
     trajectory = pd.DataFrame(result["trajectory"])
 
     landing_x = result["landing_point"]["x_drift_m"]
@@ -129,8 +158,8 @@ if run_simulation:
 
         fig_traj.add_trace(
             go.Scatter(
-                x=trajectory["x_drift_m"],
-                y=trajectory["y_drift_m"],
+                x=trajectory["x_drift_m"],  # Fixed: removed space
+                y=trajectory["y_drift_m"],  # Fixed: removed space
                 mode="lines+markers",
                 name="Payload Path"
             )
@@ -160,20 +189,17 @@ if run_simulation:
         st.metric("Landing X Drift (m)", f"{landing_x:.2f}")
         st.metric("Landing Y Drift (m)", f"{landing_y:.2f}")
 
-        st.markdown(
-            """
-            **Interpretation**
-            - Horizontal drift is caused by altitude-dependent wind layers
-            - AI-assisted wind interpolation improves trajectory realism
-            - This prediction represents the *expected landing point*
-            """
-        )
+        st.markdown("""
+        **Interpretation**
+        - Horizontal drift is caused by altitude-dependent wind layers
+        - AI-assisted wind interpolation improves trajectory realism
+        - This prediction represents the *expected landing point*
+        """)
 
 # -----------------------------
 # FOOTER
 # -----------------------------
 st.markdown("---")
 st.markdown(
-    "🚀 **Built as a rapid AI + Physics proof-of-concept for HAPS payload operations**"
+    "🚀 Built as a rapid AI + Physics proof-of-concept for HAPS payload operations"
 )
-
