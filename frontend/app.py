@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 # -----------------------------
 # CONFIG
 # -----------------------------
-BACKEND_URL = "http://127.0.0.1:8000"
+BACKEND_URL = "https://wind-payload-ai.onrender.com/"
 
 st.set_page_config(
     page_title="HAPS Wind & Payload Drop AI",
@@ -176,3 +176,4 @@ st.markdown("---")
 st.markdown(
     "🚀 **Built as a rapid AI + Physics proof-of-concept for HAPS payload operations**"
 )
+
