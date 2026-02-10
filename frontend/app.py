@@ -726,23 +726,3 @@ if run_simulation:
             st.error(f"❌ Simulation error: {str(e)}")
             st.code(str(e), language="python")
 
-# ==================== FOOTER ====================
-st.markdown("---")
-st.markdown("""
-<div style='text-align: center; color: #64748b; padding: 1.5rem;'>
-    <h3 style='margin: 0 0 0.5rem 0; color: #1e3a8a;'>🚀 System Architecture</h3>
-    <p style='margin: 0.5rem 0; font-size: 1.1rem;'>
-        <strong>Gaussian Process Regression</strong> → Uncertainty-aware wind modeling<br>
-        <strong>Monte Carlo Simulation</strong> → Probabilistic landing zone analysis<br>
-        <strong>Physics Engine</strong> → Altitude-dependent wind drift simulation
-    </p>
-    <p style='margin: 1rem 0 0.5rem 0; font-size: 0.95rem; color: #475569;'>
-        Built with FastAPI + Streamlit | Deployed on Render + Streamlit Cloud | 
-        <a href='https://render.com' target='_blank' style='color: #3b82f6;'>Backend</a> • 
-        <a href='https://streamlit.io/cloud' target='_blank' style='color: #3b82f6;'>Frontend</a>
-    </p>
-    <p style='margin: 0.5rem 0 0 0; font-size: 0.85rem; color: #94a3b8;'>
-        AI-Based Wind Profiling & Payload Drop Prediction System for High-Altitude Platform Stations (HAPS)
-    </p>
-</div>
-""", unsafe_allow_html=True)
