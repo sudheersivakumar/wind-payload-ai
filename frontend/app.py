@@ -11,7 +11,7 @@ import json
 # Update this URL after deploying backend to Render
 # For local testing: "http://127.0.0.1:8000"
 # For production: "https://your-haps-backend.onrender.com"
-BACKEND_URL = "http://127.0.0.1:8000"
+BACKEND_URL = "https://wind-payload-ai.onrender.com/"
 
 # Page configuration
 st.set_page_config(
@@ -746,3 +746,4 @@ st.markdown("""
     </p>
 </div>
 """, unsafe_allow_html=True)
+
