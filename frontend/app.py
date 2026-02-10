@@ -7,10 +7,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import json
 
-# ==================== CONFIGURATION ====================
-# Update this URL after deploying backend to Render
-# For local testing: "http://127.0.0.1:8000"
-# For production: "https://your-haps-backend.onrender.com"
+
 BACKEND_URL = "https://wind-payload-ai.onrender.com/"
 
 # Page configuration
@@ -106,7 +103,7 @@ with st.sidebar:
         "Monte Carlo Runs",
         min_value=10,
         max_value=200,
-        value=50,
+        value=10,
         step=10,
         help="Number of simulations for uncertainty analysis (higher = more accurate)"
     )
